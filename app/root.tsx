@@ -6,6 +6,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { AppProvider } from '@shopify/polaris';
+import { nyuchiPolarisTheme } from './theme/index';
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -31,6 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <title>��🇼 Nyuchi Africa Platform</title>
       </head>
       <body>
         {children}
@@ -42,7 +45,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <AppProvider 
+      i18n={{}}
+      theme={nyuchiPolarisTheme}
+      features={{
+        newDesignLanguage: true,
+      }}
+    >
+      <Outlet />
+    </AppProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -62,14 +75,16 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <AppProvider i18n={{}} theme={nyuchiPolarisTheme}>
+      <main style={{ padding: '64px 16px', maxWidth: '1200px', margin: '0 auto' }}>
+        <h1>{message}</h1>
+        <p>{details}</p>
+        {stack && (
+          <pre style={{ width: '100%', padding: '16px', overflow: 'auto' }}>
+            <code>{stack}</code>
+          </pre>
+        )}
+      </main>
+    </AppProvider>
   );
 }

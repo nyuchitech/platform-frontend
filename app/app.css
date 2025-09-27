@@ -1,15 +1,61 @@
-@import "tailwindcss";
+@import "@shopify/polaris/build/esm/styles.css";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+:root {
+  /* Nyuchi Africa Platform Theme Colors */
+  --p-color-primary: #00A651; /* Zimbabwe Green */
+  --p-color-primary-hovered: #008E45;
+  --p-color-primary-pressed: #007A3C;
+  --p-color-primary-depressed: #006533;
+  
+  /* Ubuntu Orange Accent */
+  --p-color-warning: #E95420; /* Ubuntu Orange */
+  --p-color-warning-hovered: #D84315;
+  --p-color-warning-pressed: #C23B0B;
+  
+  /* Zimbabwe Flag Colors */
+  --p-color-info: #FDD116; /* Zimbabwe Yellow */
+  --p-color-info-hovered: #F5C700;
+  --p-color-info-pressed: #E6B800;
+  
+  /* Subtle Red for Critical States */
+  --p-color-critical: #EF3340; /* Zimbabwe Red */
+  --p-color-critical-hovered: #E71C23;
+  --p-color-critical-pressed: #D80000;
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
+/* Ubuntu Philosophy: Community-first spacing */
+.ubuntu-spacing {
+  --ubuntu-gap: 1.5rem; /* Ubuntu community spacing */
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+/* Professional African Business Aesthetic */
+body {
+  font-family: var(--p-font-family-sans);
+  background-color: var(--p-color-surface);
+}
+
+/* Nyuchi Professional Header */
+.nyuchi-header {
+  background: linear-gradient(135deg, var(--p-color-primary) 0%, #007A3C 100%);
+  color: white;
+  border-bottom: 3px solid var(--p-color-info);
+}
+
+/* Community-First Card Styling */
+.community-card {
+  border-left: 4px solid var(--p-color-primary);
+  background: var(--p-color-surface);
+}
+
+/* Ubuntu Success State */
+.ubuntu-success {
+  background-color: var(--p-color-success-surface);
+  border-color: var(--p-color-primary);
+}
+
+/* Responsive Professional Layout */
+@media (max-width: 768px) {
+  .ubuntu-spacing {
+    --ubuntu-gap: 1rem;
   }
 }
