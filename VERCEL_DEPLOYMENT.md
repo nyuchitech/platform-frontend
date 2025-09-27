@@ -1,5 +1,15 @@
 # 🚀 Vercel Deployment Guide - Nyuchi Africa Platform
 
+## 🚨 Error 1014 Quick Fix
+
+If you get **"CNAME Cross-User Banned"** error:
+
+1. **Remove `platform.nyuchi.com` from Cloudflare** (easiest fix)
+2. **Set DNS at registrar level**: `CNAME platform -> cname.vercel-dns.com`  
+3. **OR use alternative**: `app.nyuchi.com` or `dashboard.nyuchi.com`
+
+[Full troubleshooting guide below](#error-1014-cname-cross-user-banned-)
+
 ## Quick Setup
 
 ### 1. **Login to Vercel**
@@ -28,12 +38,30 @@ npm run vercel:deploy
 - Add `platform.nyuchi.com`
 
 ### 2. **DNS Configuration**
-Point your domain to Vercel:
+
+**⚠️ IMPORTANT: Error 1014 Fix**
+
+If you get "CNAME Cross-User Banned" error, choose ONE of these options:
+
+**Option A: Remove from Cloudflare (Recommended)**
+1. Remove `platform.nyuchi.com` from your Cloudflare account
+2. Set DNS records directly with your domain registrar:
 ```
 Type: CNAME
 Name: platform
 Value: cname.vercel-dns.com
+TTL: 300 (5 minutes)
 ```
+
+**Option B: Keep on Cloudflare**
+1. In Cloudflare DNS, set:
+```
+Type: CNAME  
+Name: platform
+Value: cname.vercel-dns.com
+Proxy Status: DNS Only (Gray Cloud, NOT Orange Cloud)
+```
+1. Ensure the target domain is NOT also on Cloudflare
 
 ## Environment Variables
 
@@ -56,6 +84,18 @@ VITE_API_DISPATCHER_URL=https://nyuchi-africa-dispatcher.nyuchitech.workers.dev
 VITE_API_COMMUNITY_URL=https://nyuchi-africa-community.nyuchitech.workers.dev
 VITE_API_TRAVEL_URL=https://nyuchi-africa-travel.nyuchitech.workers.dev
 ```
+
+### Authentication (Passage ID - Hosted Login)
+```
+AUTH_SECRET=your_32_character_minimum_secret_key_here
+PASSAGE_CLIENT_ID=Lnv7cRQrfjdrD34CsTozgUu9
+PASSAGE_CLIENT_SECRET=TadZBqcL57mQnlZT1weLVuA3lAWZjS1Y
+PASSAGE_ISSUER=https://nyuchi-account.withpassage.com/
+NEXTAUTH_URL=https://platform.nyuchi.com
+VITE_HOSTED_LOGIN_URL=https://account.nyuchi.com
+```
+
+**OpenID Configuration**: https://nyuchi-account.withpassage.com/.well-known/openid-configuration
 
 ## GitHub Actions Secrets
 
@@ -112,6 +152,33 @@ Automatically added to all responses:
 - Ubuntu principle compliance
 
 ## Troubleshooting
+
+### Error 1014: CNAME Cross-User Banned 🚨
+
+**Problem**: `platform.nyuchi.com` shows "CNAME Cross-User Banned"
+
+**Cause**: Domain is on Cloudflare pointing to another Cloudflare domain
+
+**Solutions**:
+
+1. **Remove from Cloudflare** (Easiest):
+   ```bash
+   # Remove platform.nyuchi.com from Cloudflare completely
+   # Set DNS at domain registrar level:
+   # CNAME platform -> cname.vercel-dns.com
+   ```
+
+2. **Gray Cloud Method**:
+   ```bash
+   # In Cloudflare: Set DNS to "DNS Only" (Gray Cloud)
+   # Disable Cloudflare proxy for this subdomain
+   ```
+
+3. **Alternative Subdomain**:
+   ```bash
+   # Use app.nyuchi.com or dashboard.nyuchi.com instead
+   # Add in Vercel Dashboard -> Domains
+   ```
 
 ### Build Issues
 ```bash
