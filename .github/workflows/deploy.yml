@@ -1,0 +1,113 @@
+name: 🇿🇼 Deploy Nyuchi Platform Frontend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  test-and-build:
+    name: 🧪 Test & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📋 Install dependencies
+        run: npm ci
+        
+      - name: 🔍 TypeScript check
+        run: npm run typecheck
+        
+      - name: 🧹 Lint code
+        run: npm run lint
+        
+      - name: 🏗️ Build application
+        run: npm run build
+        
+      - name: 📤 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: build/
+          retention-days: 1
+
+  deploy:
+    name: 🚀 Deploy to Production
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📋 Install dependencies
+        run: npm ci
+        
+      - name: 🏗️ Build for production
+        run: npm run build
+        
+      # Add deployment step here based on hosting provider
+      # Example for Vercel, Netlify, or custom server
+      - name: 🌐 Deploy to platform.nyuchi.com
+        run: |
+          echo "🇿🇼 Deploying Nyuchi Africa Platform Frontend"
+          echo "✅ Ubuntu Philosophy: 'I am because we are'"
+          echo "🎯 Target: platform.nyuchi.com"
+          # Add actual deployment commands here
+          
+  ubuntu-compliance:
+    name: 🟠 Ubuntu Philosophy Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔍 Validate Ubuntu Principles
+        run: |
+          echo "🟠 Validating Ubuntu Philosophy: 'I am because we are'"
+          
+          # Check for community-first routing
+          if grep -r "community" app/routes/; then
+            echo "✅ Community features found in routing"
+          else
+            echo "❌ Missing community features in routing"
+            exit 1
+          fi
+          
+          # Check for Zimbabwe theme colors
+          if grep -r "#00A651\|#FDD116\|#EF3340" app/; then
+            echo "✅ Zimbabwe flag colors preserved"
+          else
+            echo "❌ Missing Zimbabwe flag colors"
+            exit 1
+          fi
+          
+          # Check for Ubuntu philosophy references
+          if grep -r "I am because we are\|Ubuntu" app/ README*.md; then
+            echo "✅ Ubuntu philosophy documented"
+          else
+            echo "❌ Missing Ubuntu philosophy documentation"
+            exit 1
+          fi
+          
+          echo "🇿🇼 Ubuntu compliance validation complete"

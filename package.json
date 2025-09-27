@@ -10,13 +10,15 @@
     "dev": "react-router dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "deploy": "npm run build && echo 'Ready for deployment to platform.nyuchi.com'",
+    "preview": "npm run build && npm run start"
   },
   "dependencies": {
-    "@shopify/polaris": "^13.9.5",
-    "@shopify/polaris-icons": "^9.3.1",
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
+    "@shopify/polaris": "^13.9.5",
+    "@shopify/polaris-icons": "^9.3.1",
     "isbot": "^4.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
