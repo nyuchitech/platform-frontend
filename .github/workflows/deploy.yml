@@ -65,14 +65,21 @@ jobs:
       - name: 🏗️ Build for production
         run: npm run build
         
-      # Add deployment step here based on hosting provider
-      # Example for Vercel, Netlify, or custom server
-      - name: 🌐 Deploy to platform.nyuchi.com
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          
+      - name: 🌐 Ubuntu Success Notification
         run: |
-          echo "🇿🇼 Deploying Nyuchi Africa Platform Frontend"
+          echo "🇿🇼 Nyuchi Africa Platform deployed successfully!"
           echo "✅ Ubuntu Philosophy: 'I am because we are'"
-          echo "🎯 Target: platform.nyuchi.com"
-          # Add actual deployment commands here
+          echo "🎯 Live at: platform.nyuchi.com"
+          echo "🟢 Zimbabwe Green (#00A651) theme active"
+          echo "🟠 Ubuntu Orange (#E95420) community features ready"
           
   ubuntu-compliance:
     name: 🟠 Ubuntu Philosophy Validation
