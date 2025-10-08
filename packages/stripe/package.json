@@ -1,0 +1,28 @@
+{
+  "name": "@nyuchi/stripe",
+  "version": "1.0.0",
+  "description": "🇿🇼 Nyuchi Platform - Stripe payment integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "nyuchi",
+    "stripe",
+    "payments",
+    "subscriptions"
+  ],
+  "author": "Nyuchi Africa",
+  "license": "MIT",
+  "dependencies": {
+    "stripe": "^14.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  }
+}

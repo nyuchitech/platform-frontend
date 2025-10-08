@@ -1,188 +1,173 @@
-# 🇿🇼 Nyuchi Africa Platform Frontend
+# 🇿🇼 Nyuchi Africa Platform
 
 > **Ubuntu Philosophy**: *"I am because we are"* - Building technology that uplifts African entrepreneurship through community collaboration.
 
-## 🌍 Live Platform
+## 🌍 Overview
 
-**Production URL**: [platform.nyuchi.com](https://platform.nyuchi.com)
+Nyuchi is a full-stack platform for African entrepreneurship built with:
+- **Zimbabwe Heritage** - Flag colors, cultural identity
+- **Ubuntu Philosophy** - Community-first approach
+- **Modern Tech** - Cloudflare Workers, Supabase, Material UI
+- **AI-Powered** - Claude AI for content analysis and generation
 
-### Route Structure
-- `/` - Platform Dashboard (main page)
-- `/community` - Community Features & Collaboration
-- `/home` - Welcome & Getting Started
-- `/auth/signin` - Secure authentication with Passage ID
-- `/auth/signout` - Sign out with Ubuntu farewell
-- `/auth/error` - Friendly error handling with community support
+## 🏗️ Architecture
 
-## �� Tech Stack
-
-- **Framework**: Remix with React Router 7 (SSR, file-based routing)
-- **UI Library**: Shopify Polaris React (Shopify Admin design patterns)
-- **Language**: TypeScript (.tsx files throughout)
-- **Styling**: Polaris CSS + Zimbabwe flag color themes
-- **Build**: Vite with optimized production builds
-
-## 🎨 Design Philosophy
-
-### Zimbabwe Flag Colors
-- **Primary Green**: `#00A651` 🟢 - Growth, prosperity, agriculture
-- **Golden Yellow**: `#FDD116` 🟡 - Mineral wealth, bright future
-- **Deep Red**: `#EF3340` 🔴 - Heritage, strength, sacrifice
-- **Ubuntu Orange**: `#E95420` 🟠 - Community, collaboration
-
-### Shopify Admin UI Patterns
-```tsx
-<Frame topBar={<TopBar />} navigation={<Navigation />}>
-  <Page title="Community Dashboard" primaryAction={{content: 'New Project'}}>
-    <Layout>
-      <Layout.Section>
-        <Card>
-          <BlockStack gap="400">
-            <Text variant="headingLg">Ubuntu Community</Text>
-            <Badge tone="success">Active</Badge>
-          </BlockStack>
-        </Card>
-      </Layout.Section>
-    </Layout>
-  </Page>
-</Frame>
+```
+nyuchi-platform/
+├── apps/
+│   ├── platform/          # Main dashboard (Hono + MUI + Cloudflare Workers)
+│   └── workers/           # API workers (Cloudflare Workers)
+├── packages/
+│   ├── database/          # Supabase client + schemas
+│   ├── ui/                # Shared MUI components (Zimbabwe-themed)
+│   ├── auth/              # Supabase Auth integration
+│   ├── stripe/            # Stripe payment integration
+│   └── ubuntu/            # Ubuntu philosophy utilities
+├── products/              # External product connectors (future)
+└── archives/              # Previous Remix codebase
 ```
 
-## 🛠️ Development
+## 🚀 Tech Stack
+
+- **Frontend**: Hono (Cloudflare Workers) + Material UI (MUI)
+- **Database**: Supabase Postgres
+- **Auth**: Supabase Auth
+- **Storage**: Cloudflare R2
+- **Cache**: Cloudflare KV
+- **Payments**: Stripe
+- **AI**: Claude API (via Cloudflare AI Gateway)
+- **Deployment**: Cloudflare Workers
+- **Monorepo**: Turborepo
+
+## 🎨 Zimbabwe Design System
+
+- **Flag Strip**: 8px vertical strip (Green-Yellow-Red-Black) on all pages
+- **Colors**: Zimbabwe flag colors as primary palette
+- **Typography**: Playfair Display (headings) + Roboto (body)
+- **Buttons**: All pill-shaped (rounded-full)
+
+## 🛠️ Quick Start
 
 ### Prerequisites
 - Node.js 20+
-- npm or yarn
+- npm 10+
+- Supabase account
+- Cloudflare account
+- Stripe account
 
-### Getting Started
+### Installation
+
 ```bash
-# Clone the repository
-git clone https://github.com/nyuchitech/platform-frontend.git
-cd platform-frontend
+# Clone repository
+git clone <repo-url>
+cd nyuchi-platform
 
 # Install dependencies
 npm install
 
-# Start development server
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your credentials
+
+# Set up Supabase
+cd packages/database
+npm run migrate
+npm run seed
+
+# Start development
 npm run dev
-# Opens http://localhost:5173
 ```
 
-### Available Scripts
+### Development Commands
+
 ```bash
-npm run dev        # Development server
-npm run build      # Production build
-npm run start      # Production server
-npm run typecheck  # TypeScript validation
-npm run lint       # Code linting
-npm run deploy     # Build for deployment
-npm run preview    # Preview production build
+npm run dev              # Start all apps in development
+npm run build            # Build all apps
+npm run lint             # Lint all packages
+npm run type-check       # TypeScript validation
+npm run clean            # Clean all build artifacts
+
+# Database
+npm run db:migrate       # Run Supabase migrations
+npm run db:seed          # Seed database with test data
+npm run db:studio        # Open Supabase Studio
+
+# Deployment
+npm run deploy           # Deploy all apps
+npm run deploy:platform  # Deploy platform only
+npm run deploy:workers   # Deploy workers only
 ```
+
+## 📦 Core Features
+
+### Phase 1 (Current)
+- ✅ Community Directory (request → approve → publish)
+- ✅ Content Submission System (write → review → publish)
+- ✅ Ubuntu Scoring (points, levels, leaderboard)
+- ✅ Zimbabwe Design System (flag, colors, typography)
+- ✅ Stripe Integration (verification + subscriptions)
+- ✅ Admin Interface (configurations, user management)
+- ✅ Claude AI Integration (content analysis, generation)
+
+### Phase 2 (Planned)
+- 🚧 Marketing site (Next.js on Vercel)
+- 🚧 Product connectors (SEO Manager, MailSense, etc.)
+- 🚧 Real-time collaboration
+- 🚧 Advanced analytics
+- 🚧 Mobile native apps
+
+## 🤝 Ubuntu Philosophy
+
+**Brand vs. Philosophy:**
+- ✅ **Brand**: "Nyuchi" or "Nyuchi Africa"
+- ✅ **Philosophy**: Ubuntu ("I am because we are")
+- ❌ **Never** use "Ubuntu" as the brand name
+
+**Ubuntu Features:**
+- Community features always free
+- Points awarded for contributions
+- Leaderboard celebrating community leaders
+- Collaborative approach to business success
+
+## 📊 Project Structure
+
+### Apps
+- **apps/platform**: Main dashboard application (Hono + MUI)
+- **apps/workers**: Cloudflare Workers for API routes
+
+### Packages
+- **packages/database**: Supabase client, schemas, migrations
+- **packages/ui**: Zimbabwe-themed MUI components
+- **packages/auth**: Authentication utilities
+- **packages/stripe**: Payment integration
+- **packages/ubuntu**: Ubuntu philosophy utilities
+
+## 🔧 Configuration
+
+### Environment Variables
+
+See `.env.example` for all required variables:
+- Supabase (database + auth)
+- Cloudflare (Workers, KV, R2)
+- Stripe (payments)
+- Claude AI (content analysis)
+
+## 📚 Documentation
+
+- [Architecture Documentation](./docs/ARCHITECTURE.md)
+- [Database Schema](./packages/database/README.md)
+- [Zimbabwe Design System](./packages/ui/README.md)
+- [Ubuntu Philosophy Guide](./packages/ubuntu/README.md)
 
 ## 🌐 Deployment
 
-### Automatic Deployment
-- **CI/CD**: GitHub Actions workflow
-- **Target**: platform.nyuchi.com  
-- **Trigger**: Push to `main` branch
+### Cloudflare Workers
+- **Platform**: platform.nyuchi.com
+- **API**: api.nyuchi.com
 
-### Manual Deployment
-```bash
-npm run deploy
-```
-
-## 🔗 Backend Integration
-
-Connects to existing Cloudflare Workers:
-- **Dispatcher**: Main routing & Ubuntu middleware
-- **Community**: Always-free community platform
-- **Travel**: Business travel platform
-- **Auth**: Authentication & user management
-
-### API Endpoints
-```typescript
-// Production
-VITE_API_DISPATCHER_URL=https://nyuchi-africa-dispatcher.nyuchitech.workers.dev
-VITE_API_COMMUNITY_URL=https://nyuchi-africa-community.nyuchitech.workers.dev
-
-// Development  
-VITE_API_DISPATCHER_URL=http://localhost:8787
-```
-
-## 🔧 Environment Variables
-
-Copy `.env.example` to `.env.local` for development:
-```bash
-cp .env.example .env.local
-```
-
-Key variables:
-- `VITE_APP_URL` - Application base URL
-- `VITE_UBUNTU_PHILOSOPHY` - Ubuntu philosophy text
-- `VITE_COMMUNITY_ALWAYS_FREE` - Ensures community features stay free
-- `VITE_THEME_PRIMARY_COLOR` - Zimbabwe green theme
-
-## 🧪 Testing
-
-### Ubuntu Compliance Testing
-```bash
-# Validates Ubuntu philosophy integration
-npm run test:ubuntu
-
-# Checks Zimbabwe theme colors
-npm run test:theme
-
-# Validates community-first routing
-npm run test:routing
-```
-
-## 📁 Project Structure
-
-```
-platform-frontend/
-├── app/
-│   ├── routes/               # Remix file-based routing
-│   │   ├── _layout.tsx       # Main layout with Frame/Navigation
-│   │   ├── _index.tsx        # Platform dashboard (/)
-│   │   ├── community.tsx     # Community features (/community)
-│   │   └── home.tsx          # Welcome page (/home)
-│   ├── components/           # Polaris React components
-│   ├── theme/               # Zimbabwe + Ubuntu theme system
-│   │   ├── index.ts         # Theme exports
-│   │   └── nyuchi-polaris-theme.ts # Polaris theme config
-│   ├── root.tsx             # App root with Polaris AppProvider
-│   └── app.css              # Polaris CSS + custom variables
-├── .github/workflows/       # CI/CD automation
-├── public/                  # Static assets
-└── package.json             # Dependencies & scripts
-```
-
-## 🤝 Contributing
-
-### Ubuntu Philosophy Guidelines
-1. **Community First**: Features benefiting the community get priority
-2. **"I am because we are"**: Individual success through collective success  
-3. **African Context**: Solutions designed for African business environments
-4. **Professional Quality**: Enterprise-grade user experience
-
-### Code Standards
-- TypeScript with `.tsx` files only
-- Shopify Polaris React components exclusively
-- Zimbabwe flag colors in theming
-- Ubuntu philosophy in UX decisions
-
-## 🎯 Roadmap
-
-- [x] ✅ Consolidated frontend architecture  
-- [x] ✅ Shopify Admin design implementation
-- [x] ✅ Zimbabwe flag color theming
-- [x] ✅ Flattened routing structure
-- [x] ✅ CI/CD pipeline setup
-- [ ] 🚧 Backend API integration
-- [ ] 🚧 Authentication flow
-- [ ] 🚧 Community features expansion
-- [ ] 🚧 Performance optimization
-- [ ] 🚧 Mobile responsiveness enhancement
+### Supabase
+- Database hosted on Supabase
+- Auth handled by Supabase Auth
 
 ## 📄 License
 
@@ -190,4 +175,6 @@ MIT License - Built with Ubuntu philosophy for African entrepreneurship
 
 ---
 
-**🇿🇼 Nyuchi Africa Platform** | **🟠 Ubuntu Philosophy** | **⚡ Powered by Remix + Polaris React**
+**🇿🇼 Nyuchi Africa** | **🟠 Ubuntu Philosophy** | **⚡ Powered by Cloudflare + Supabase + Claude AI**
+
+*"I am because we are"*

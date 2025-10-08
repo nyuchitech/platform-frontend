@@ -1,0 +1,38 @@
+name = "nyuchi-platform"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+node_compat = true
+
+[env.production]
+name = "nyuchi-platform"
+routes = [
+  { pattern = "platform.nyuchi.com", zone_name = "nyuchi.com" }
+]
+
+[env.development]
+name = "nyuchi-platform-dev"
+
+# Environment variables (use wrangler secret for sensitive values)
+# wrangler secret put SUPABASE_URL
+# wrangler secret put SUPABASE_ANON_KEY
+# wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+# wrangler secret put STRIPE_SECRET_KEY
+# wrangler secret put STRIPE_WEBHOOK_SECRET
+# wrangler secret put CLOUDFLARE_AI_GATEWAY_ENDPOINT
+
+[vars]
+ENVIRONMENT = "production"
+
+# KV Namespaces for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id"
+
+# R2 Buckets for file uploads
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "nyuchi-uploads"
+
+# AI Gateway binding
+[ai]
+binding = "AI"

@@ -1,0 +1,31 @@
+{
+  "name": "@nyuchi/platform",
+  "version": "1.0.0",
+  "description": "🇿🇼 Nyuchi Platform - Main application",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "build": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "nyuchi",
+    "platform",
+    "cloudflare",
+    "workers",
+    "hono"
+  ],
+  "author": "Nyuchi Africa",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.0.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "stripe": "^14.9.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "wrangler": "^3.22.0",
+    "typescript": "^5.3.3"
+  }
+}
