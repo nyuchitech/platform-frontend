@@ -22,6 +22,7 @@ import {
   Article as ArticleIcon,
   People as PeopleIcon,
   TrendingUp as TrendingIcon,
+  FlightTakeoff as TravelIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { ZimbabweFlagStrip } from '../../components/ZimbabweFlagStrip';
@@ -31,6 +32,7 @@ interface CommunityStats {
   total_businesses: number;
   total_articles: number;
   top_ubuntu_score: number;
+  total_travel_businesses?: number;
 }
 
 export default function CommunityPage() {
@@ -62,6 +64,14 @@ export default function CommunityPage() {
       href: '/community/directory',
       stat: stats?.total_businesses,
       statLabel: 'Businesses',
+    },
+    {
+      title: 'Travel Directory',
+      description: 'Explore verified African travel businesses and destinations.',
+      icon: <TravelIcon sx={{ fontSize: 48, color: '#2196F3' }} />,
+      href: '/community/travel-directory',
+      stat: stats?.total_travel_businesses,
+      statLabel: 'Travel Partners',
     },
     {
       title: 'Ubuntu Leaderboard',
@@ -136,9 +146,9 @@ export default function CommunityPage() {
 
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 6, ml: { xs: 2, md: 'auto' }, pl: { xs: 2, md: 3 } }}>
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
           {features.map((feature) => (
-            <Grid item xs={12} md={4} key={feature.title}>
+            <Grid item xs={12} sm={6} md={3} key={feature.title}>
               <Card
                 sx={{
                   height: '100%',

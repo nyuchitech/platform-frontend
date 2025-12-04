@@ -34,6 +34,7 @@ import {
   LightMode as LightIcon,
   DarkMode as DarkIcon,
   Logout as LogoutIcon,
+  FlightTakeoff as TravelIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
@@ -44,6 +45,7 @@ const DRAWER_WIDTH = 240;
 
 const navigation = [
   { name: 'Directory', href: '/dashboard/directory', icon: DirectoryIcon },
+  { name: 'Travel', href: '/dashboard/travel', icon: TravelIcon },
   { name: 'Content', href: '/dashboard/content', icon: ContentIcon },
   { name: 'Ubuntu', href: '/dashboard/ubuntu', icon: UbuntuIcon },
   { name: 'Admin', href: '/dashboard/admin', icon: AdminIcon, adminOnly: true },
