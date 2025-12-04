@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UBUNTU_PROMPTS = {
   greeting: `You are Ubuntu AI, embodying the African philosophy "I am because we are."
 Your purpose is to help African entrepreneurs and businesses succeed together.
@@ -23,9 +24,6 @@ Always respond with warmth and wisdom, grounded in Ubuntu philosophy.`,
 - Shared success over individual gain
 - Complementary skills and resources`,
 };
-
-// Export for potential future use
-export { UBUNTU_PROMPTS };
 
 export async function POST(request: NextRequest) {
   try {
