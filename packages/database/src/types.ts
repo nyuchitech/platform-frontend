@@ -68,6 +68,32 @@ export type ListingType = 'free' | 'verified' | 'premium';
 export type ExpertCategory = 'safari_guide' | 'cultural_specialist' | 'adventure_guide' | 'urban_guide' | 'photography_guide' | 'bird_guide';
 
 /**
+ * Activity type enum (for audit logging)
+ */
+export type ActivityType =
+  | 'SIGN_UP'
+  | 'SIGN_IN'
+  | 'SIGN_OUT'
+  | 'UPDATE_PASSWORD'
+  | 'DELETE_ACCOUNT'
+  | 'UPDATE_ACCOUNT'
+  | 'CREATE_CONTENT'
+  | 'UPDATE_CONTENT'
+  | 'DELETE_CONTENT'
+  | 'SUBMIT_CONTENT'
+  | 'APPROVE_CONTENT'
+  | 'REJECT_CONTENT'
+  | 'CREATE_LISTING'
+  | 'UPDATE_LISTING'
+  | 'DELETE_LISTING'
+  | 'APPLY_EXPERT'
+  | 'APPLY_BUSINESS'
+  | 'VERIFY_BUSINESS'
+  | 'EARN_UBUNTU_POINTS'
+  | 'SUBSCRIBE'
+  | 'UNSUBSCRIBE';
+
+/**
  * JSON value type for metadata
  */
 export type Json =
@@ -99,6 +125,7 @@ export interface Database {
           stripe_customer_id: string | null;
           created_at: string;
           updated_at: string;
+          deleted_at: string | null;
         };
         Insert: {
           id: string;
@@ -114,6 +141,7 @@ export interface Database {
           stripe_customer_id?: string | null;
           created_at?: string;
           updated_at?: string;
+          deleted_at?: string | null;
         };
         Update: {
           id?: string;
@@ -129,8 +157,49 @@ export interface Database {
           stripe_customer_id?: string | null;
           created_at?: string;
           updated_at?: string;
+          deleted_at?: string | null;
         };
         Relationships: [];
+      };
+      /**
+       * Activity logs table - Audit trail for user actions
+       */
+      activity_logs: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          activity: ActivityType;
+          ip_address: string | null;
+          user_agent: string | null;
+          metadata: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          activity: ActivityType;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          activity?: ActivityType;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'activity_logs_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          }
+        ];
       };
       directory_listings: {
         Row: {
@@ -736,6 +805,7 @@ export interface Database {
       application_status: ApplicationStatus;
       listing_type: ListingType;
       expert_category: ExpertCategory;
+      activity_type: ActivityType;
     };
     CompositeTypes: {
       [_ in never]: never;

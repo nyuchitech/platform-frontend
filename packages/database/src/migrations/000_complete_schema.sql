@@ -91,6 +91,35 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 
+-- Activity type (for audit logging)
+DO $$ BEGIN
+  CREATE TYPE activity_type AS ENUM (
+    'SIGN_UP',
+    'SIGN_IN',
+    'SIGN_OUT',
+    'UPDATE_PASSWORD',
+    'DELETE_ACCOUNT',
+    'UPDATE_ACCOUNT',
+    'CREATE_CONTENT',
+    'UPDATE_CONTENT',
+    'DELETE_CONTENT',
+    'SUBMIT_CONTENT',
+    'APPROVE_CONTENT',
+    'REJECT_CONTENT',
+    'CREATE_LISTING',
+    'UPDATE_LISTING',
+    'DELETE_LISTING',
+    'APPLY_EXPERT',
+    'APPLY_BUSINESS',
+    'VERIFY_BUSINESS',
+    'EARN_UBUNTU_POINTS',
+    'SUBSCRIBE',
+    'UNSUBSCRIBE'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
 -- ============================================================================
 -- PROFILES TABLE (extends auth.users)
 -- Ubuntu: Every person is valuable and contributes to the community
@@ -108,7 +137,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   contribution_count INTEGER DEFAULT 0 NOT NULL,
   stripe_customer_id TEXT UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMPTZ DEFAULT NULL -- Soft deletion support
 );
 
 -- RLS policies for profiles
@@ -643,6 +673,48 @@ CREATE INDEX IF NOT EXISTS idx_ubuntu_type ON public.ubuntu_contributions(contri
 CREATE INDEX IF NOT EXISTS idx_ubuntu_created_at ON public.ubuntu_contributions(created_at DESC);
 
 -- ============================================================================
+-- ACTIVITY LOGS TABLE
+-- Ubuntu: Transparency and accountability in all actions
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.activity_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  activity activity_type NOT NULL,
+  ip_address INET,
+  user_agent TEXT,
+  metadata JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+-- RLS policies for activity logs
+ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view own activity" ON public.activity_logs;
+CREATE POLICY "Users can view own activity"
+  ON public.activity_logs FOR SELECT
+  USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "System can insert activity" ON public.activity_logs;
+CREATE POLICY "System can insert activity"
+  ON public.activity_logs FOR INSERT
+  WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admins can view all activity" ON public.activity_logs;
+CREATE POLICY "Admins can view all activity"
+  ON public.activity_logs FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND (role = 'admin' OR 'admin' = ANY(capabilities))
+    )
+  );
+
+-- Indexes for activity logs
+CREATE INDEX IF NOT EXISTS idx_activity_user_id ON public.activity_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_type ON public.activity_logs(activity);
+CREATE INDEX IF NOT EXISTS idx_activity_created_at ON public.activity_logs(created_at DESC);
+
+-- ============================================================================
 -- VERIFICATION REQUESTS TABLE
 -- Ubuntu: Trust through transparency
 -- ============================================================================
@@ -813,6 +885,49 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Function to log user activity
+CREATE OR REPLACE FUNCTION log_activity(
+  p_user_id UUID,
+  p_activity activity_type,
+  p_ip_address INET DEFAULT NULL,
+  p_user_agent TEXT DEFAULT NULL,
+  p_metadata JSONB DEFAULT NULL
+)
+RETURNS public.activity_logs AS $$
+DECLARE
+  new_log public.activity_logs;
+BEGIN
+  INSERT INTO public.activity_logs (user_id, activity, ip_address, user_agent, metadata)
+  VALUES (p_user_id, p_activity, p_ip_address, p_user_agent, p_metadata)
+  RETURNING * INTO new_log;
+
+  RETURN new_log;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to soft delete user account
+CREATE OR REPLACE FUNCTION soft_delete_account(p_user_id UUID)
+RETURNS public.profiles AS $$
+DECLARE
+  updated_profile public.profiles;
+BEGIN
+  UPDATE public.profiles
+  SET
+    deleted_at = NOW(),
+    email = 'deleted-' || id::TEXT || '@deleted.nyuchi.com',
+    full_name = '[Deleted User]',
+    avatar_url = NULL,
+    updated_at = NOW()
+  WHERE id = p_user_id AND deleted_at IS NULL
+  RETURNING * INTO updated_profile;
+
+  -- Log the deletion
+  PERFORM log_activity(p_user_id, 'DELETE_ACCOUNT', NULL, NULL, '{"soft_delete": true}'::JSONB);
+
+  RETURN updated_profile;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Function to increment Ubuntu score
 CREATE OR REPLACE FUNCTION increment_ubuntu_score(p_user_id UUID, p_points INTEGER)
@@ -1012,6 +1127,9 @@ GRANT INSERT, UPDATE ON public.unified_submissions TO authenticated;
 GRANT SELECT ON public.ubuntu_contributions TO authenticated;
 GRANT INSERT ON public.ubuntu_contributions TO authenticated;
 
+GRANT SELECT ON public.activity_logs TO authenticated;
+GRANT INSERT ON public.activity_logs TO authenticated;
+
 GRANT SELECT ON public.verification_requests TO authenticated;
 GRANT INSERT ON public.verification_requests TO authenticated;
 
@@ -1033,10 +1151,13 @@ COMMENT ON TABLE public.experts IS 'Local experts directory - Ubuntu: Local expe
 COMMENT ON TABLE public.businesses IS 'Business partner directory - Ubuntu: Businesses thrive when they serve the community.';
 COMMENT ON TABLE public.unified_submissions IS 'Unified pipeline - Ubuntu: Every contribution matters and deserves attention.';
 COMMENT ON TABLE public.ubuntu_contributions IS 'Ubuntu points tracking - Ubuntu: Celebrate and recognize community contributions.';
+COMMENT ON TABLE public.activity_logs IS 'Activity audit log - Ubuntu: Transparency and accountability in all actions.';
 COMMENT ON TABLE public.verification_requests IS 'Verification process - Ubuntu: Trust through transparency and accountability.';
 COMMENT ON TABLE public.product_subscriptions IS 'Subscriptions - Ubuntu: Support the platform that supports your community.';
 
 COMMENT ON FUNCTION public.handle_new_user() IS 'Automatically creates profile for new users - Ubuntu: Welcome everyone to the community.';
+COMMENT ON FUNCTION log_activity(UUID, activity_type, INET, TEXT, JSONB) IS 'Log user activity - Ubuntu: Transparency builds trust.';
+COMMENT ON FUNCTION soft_delete_account(UUID) IS 'Soft delete user account - Ubuntu: Respect and preserve data integrity.';
 COMMENT ON FUNCTION increment_ubuntu_score(UUID, INTEGER) IS 'Award Ubuntu points for contributions - Ubuntu: Recognize those who give.';
 COMMENT ON FUNCTION get_top_contributors(INTEGER) IS 'Get community leaderboard - Ubuntu: Celebrate community champions.';
 COMMENT ON FUNCTION add_user_capability(UUID, user_capability) IS 'Grant user capability - Ubuntu: Empower community members.';
