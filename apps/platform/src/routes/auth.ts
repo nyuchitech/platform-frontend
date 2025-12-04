@@ -26,6 +26,10 @@ auth.post('/signup', async (c) => {
 
     const { user, session } = await signUp(email, password, { name, role: userRole }, c.env);
 
+    if (!user || !session) {
+      return c.json({ error: 'Signup failed - no user or session returned' }, 400);
+    }
+
     // Create profile in profiles table using service role
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(
@@ -37,7 +41,7 @@ auth.post('/signup', async (c) => {
       .from('profiles')
       .insert({
         id: user.id,
-        email: user.email,
+        email: user.email || email,
         full_name: name || '',
         role: userRole,
         ubuntu_score: 0,
