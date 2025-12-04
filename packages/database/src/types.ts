@@ -7,9 +7,30 @@
  */
 
 /**
- * User role enum
+ * User role enum (primary role)
  */
-export type UserRole = 'user' | 'contributor' | 'moderator' | 'admin';
+export type UserRole = 'user' | 'contributor' | 'moderator' | 'reviewer' | 'admin';
+
+/**
+ * User capabilities (can hold multiple)
+ * - contributor: Can submit content
+ * - expert: Registered as local expert
+ * - business_owner: Has business listings
+ * - moderator: Reviews content submissions
+ * - reviewer: Reviews expert/business applications
+ * - admin: Full access to all pipelines
+ */
+export type UserCapability = 'contributor' | 'expert' | 'business_owner' | 'moderator' | 'reviewer' | 'admin';
+
+/**
+ * Submission type enum
+ */
+export type SubmissionType = 'content' | 'expert_application' | 'business_application' | 'directory_listing' | 'travel_business';
+
+/**
+ * Pipeline status enum (unified across all submission types)
+ */
+export type PipelineStatus = 'draft' | 'submitted' | 'in_review' | 'needs_changes' | 'approved' | 'rejected' | 'published';
 
 /**
  * Listing status enum
@@ -72,6 +93,7 @@ export interface Database {
           company: string | null;
           country: string | null;
           role: UserRole;
+          capabilities: UserCapability[];
           ubuntu_score: number;
           contribution_count: number;
           stripe_customer_id: string | null;
@@ -86,6 +108,7 @@ export interface Database {
           company?: string | null;
           country?: string | null;
           role?: UserRole;
+          capabilities?: UserCapability[];
           ubuntu_score?: number;
           contribution_count?: number;
           stripe_customer_id?: string | null;
@@ -100,6 +123,7 @@ export interface Database {
           company?: string | null;
           country?: string | null;
           role?: UserRole;
+          capabilities?: UserCapability[];
           ubuntu_score?: number;
           contribution_count?: number;
           stripe_customer_id?: string | null;
@@ -606,6 +630,77 @@ export interface Database {
         };
         Relationships: [];
       };
+      /**
+       * Unified submissions table - Central pipeline for all submissions
+       * Provides a unified view of content, expert, and business submissions
+       */
+      unified_submissions: {
+        Row: {
+          id: string;
+          user_id: string;
+          submission_type: SubmissionType;
+          reference_id: string;
+          title: string;
+          description: string | null;
+          status: PipelineStatus;
+          assigned_to: string | null;
+          reviewer_notes: string | null;
+          submitted_at: string | null;
+          reviewed_at: string | null;
+          published_at: string | null;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          submission_type: SubmissionType;
+          reference_id: string;
+          title: string;
+          description?: string | null;
+          status?: PipelineStatus;
+          assigned_to?: string | null;
+          reviewer_notes?: string | null;
+          submitted_at?: string | null;
+          reviewed_at?: string | null;
+          published_at?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          submission_type?: SubmissionType;
+          reference_id?: string;
+          title?: string;
+          description?: string | null;
+          status?: PipelineStatus;
+          assigned_to?: string | null;
+          reviewer_notes?: string | null;
+          submitted_at?: string | null;
+          reviewed_at?: string | null;
+          published_at?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'unified_submissions_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'unified_submissions_assigned_to_fkey';
+            columns: ['assigned_to'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -631,6 +726,9 @@ export interface Database {
     };
     Enums: {
       user_role: UserRole;
+      user_capability: UserCapability;
+      submission_type: SubmissionType;
+      pipeline_status: PipelineStatus;
       listing_status: ListingStatus;
       content_status: ContentStatus;
       verification_status: VerificationStatus;

@@ -29,6 +29,7 @@ import {
   Article as ContentIcon,
   EmojiEvents as UbuntuIcon,
   AdminPanelSettings as AdminIcon,
+  Assignment as PipelineIcon,
   Menu as MenuIcon,
   Settings as SettingsIcon,
   LightMode as LightIcon,
@@ -50,6 +51,7 @@ const navigation = [
   { name: 'Travel', href: '/dashboard/travel', icon: TravelIcon },
   { name: 'Content', href: '/dashboard/content', icon: ContentIcon },
   { name: 'Ubuntu', href: '/dashboard/ubuntu', icon: UbuntuIcon },
+  { name: 'Pipeline', href: '/dashboard/pipeline', icon: PipelineIcon, staffOnly: true },
   { name: 'Admin', href: '/dashboard/admin', icon: AdminIcon, adminOnly: true },
   { name: 'Settings', href: '/dashboard/settings', icon: SettingsIcon },
 ];
@@ -172,7 +174,12 @@ export default function DashboardLayout({
       {/* Navigation */}
       <List sx={{ flex: 1, px: 1.5, py: 2 }}>
         {navigation.map((item) => {
+          // Admin only items
           if (item.adminOnly && user.role !== 'admin') {
+            return null;
+          }
+          // Staff only (moderator, reviewer, admin)
+          if (item.staffOnly && !['admin', 'moderator', 'reviewer'].includes(user.role || '')) {
             return null;
           }
 
