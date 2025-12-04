@@ -6,6 +6,7 @@
 import { Hono } from 'hono';
 import { authMiddleware, requireAdmin, requireModerator } from '../lib/auth';
 import { createSupabaseClient, createSupabaseAdminClient } from '../lib/database';
+import type { UserRole } from '@nyuchi/database';
 import { Env } from '../index';
 
 const admin = new Hono<{ Bindings: Env }>();
@@ -103,7 +104,7 @@ admin.get('/users', authMiddleware, requireAdmin, async (c) => {
       .range((page - 1) * limit, page * limit - 1);
 
     if (role) {
-      query = query.eq('role', role);
+      query = query.eq('role', role as UserRole);
     }
 
     const { data, count, error } = await query;
