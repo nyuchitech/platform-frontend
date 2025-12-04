@@ -84,14 +84,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single();
 
     if (!existing) {
-      // Determine role - admin for bryan@nyuchi.com
-      const role = supabaseUser.email === 'bryan@nyuchi.com' ? 'admin' : 'user';
-
+      // New users default to 'user' role - admin roles should be assigned through proper database operations
       await supabase.from('profiles').insert({
         id: supabaseUser.id,
         email: supabaseUser.email,
         full_name: name || supabaseUser.user_metadata?.full_name || '',
-        role,
+        role: 'user',
         capabilities: [],
         ubuntu_score: 0,
         contribution_count: 0,

@@ -67,7 +67,7 @@ directory.get('/', async (c) => {
  */
 directory.get('/:id', async (c) => {
   try {
-    const client = createSupabaseClient();
+    const client = createSupabaseClient(c.env);
     const id = c.req.param('id');
 
     const listing = await getDirectoryListing(client, id);
@@ -92,7 +92,7 @@ directory.get('/:id', async (c) => {
  */
 directory.post('/', authMiddleware, async (c) => {
   try {
-    const client = createSupabaseClient();
+    const client = createSupabaseClient(c.env);
     const user = c.get('user');
     const body = await c.req.json();
 
@@ -130,7 +130,7 @@ directory.post('/', authMiddleware, async (c) => {
  */
 directory.put('/:id', authMiddleware, async (c) => {
   try {
-    const client = createSupabaseClient();
+    const client = createSupabaseClient(c.env);
     const user = c.get('user');
     const id = c.req.param('id');
     const body = await c.req.json();
@@ -168,7 +168,7 @@ directory.put('/:id', authMiddleware, async (c) => {
  */
 directory.delete('/:id', authMiddleware, async (c) => {
   try {
-    const client = createSupabaseClient();
+    const client = createSupabaseClient(c.env);
     const user = c.get('user');
     const id = c.req.param('id');
 
@@ -204,7 +204,7 @@ directory.delete('/:id', authMiddleware, async (c) => {
  */
 directory.post('/:id/approve', authMiddleware, requireModerator, async (c) => {
   try {
-    const client = createSupabaseClient();
+    const client = createSupabaseClient(c.env);
     const user = c.get('user');
     const id = c.req.param('id');
 
@@ -234,7 +234,7 @@ directory.post('/:id/approve', authMiddleware, requireModerator, async (c) => {
  */
 directory.post('/:id/reject', authMiddleware, requireModerator, async (c) => {
   try {
-    const client = createSupabaseClient();
+    const client = createSupabaseClient(c.env);
     const user = c.get('user');
     const id = c.req.param('id');
     const { reason } = await c.req.json();

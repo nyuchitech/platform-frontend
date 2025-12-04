@@ -21,8 +21,8 @@ auth.post('/signup', async (c) => {
       return c.json({ error: 'Email and password required' }, 400);
     }
 
-    // Determine role - admin for bryan@nyuchi.com, otherwise use provided or default to 'user'
-    const userRole = email === 'bryan@nyuchi.com' ? 'admin' : (role || 'user');
+    // Use provided role or default to 'user' - admin roles should be assigned through proper database operations
+    const userRole = role || 'user';
 
     const { user, session } = await signUp(email, password, { name, role: userRole }, c.env);
 
