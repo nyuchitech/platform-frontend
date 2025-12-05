@@ -8,7 +8,7 @@ This document describes the domain configuration for the Nyuchi platform.
 |--------|---------|---------|---------|
 | `platform.nyuchi.com` | Next.js Web App | Vercel | Main platform frontend |
 | `api.nyuchi.com` | Hono API (Cloudflare Worker) | Cloudflare | Backend API |
-| `www.nyuchi.com` | Marketing Site | - | Marketing/landing page |
+| `www.nyuchi.com` | Marketing Site | Vercel (separate project) | Marketing/landing page |
 | `community-assets.nyuchi.com` | R2 Bucket | Cloudflare | Community assets (images, files) |
 | `media.nyuchi.com` | R2 Bucket | Cloudflare | Media uploads |
 
@@ -31,14 +31,19 @@ This document describes the domain configuration for the Nyuchi platform.
 
 ## Vercel Projects
 
-The platform requires **two separate Vercel projects**:
+This monorepo deploys to **one Vercel project**. The marketing site is a **separate repository/project**.
 
-### 1. Web App (`apps/web`)
+### 1. Platform App (`apps/web`) - This Repo
 - **Domain**: `platform.nyuchi.com`
 - **Framework**: Next.js
 - **Root Directory**: `apps/web`
 
-### 2. API (`apps/platform`)
+### 2. Marketing Site - Separate Repo
+- **Domain**: `www.nyuchi.com`
+- **Framework**: Next.js (or other)
+- **Repository**: Separate project
+
+### 3. API (`apps/platform`) - This Repo
 - **Domain**: `api.nyuchi.com`
 - **Framework**: Cloudflare Workers (Hono)
 - **Deployment**: Cloudflare (not Vercel)
