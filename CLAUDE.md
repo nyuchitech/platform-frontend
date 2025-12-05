@@ -12,8 +12,8 @@ Nyuchi Africa Platform is a community-focused business platform for African entr
 
 | Domain | Service | Hosting | Source |
 |--------|---------|---------|--------|
-| `platform.nyuchi.com` | Next.js Web App | Vercel | `web/` |
-| `api.nyuchi.com` | Hono API | Cloudflare Worker | `apps/platform` |
+| `platform.nyuchi.com` | Next.js Web App | Vercel | `apps/platform` |
+| `api.nyuchi.com` | Hono API | Cloudflare Worker | `cloudflare/` |
 | `www.nyuchi.com` | Marketing Site | Vercel | Separate repo |
 | `community-assets.nyuchi.com` | R2 Bucket | Cloudflare | - |
 | `media.nyuchi.com` | R2 Bucket | Cloudflare | - |
@@ -31,9 +31,12 @@ Nyuchi Africa Platform is a community-focused business platform for African entr
 ## Monorepo Structure
 
 ```
-├── web/               # Next.js frontend → platform.nyuchi.com (Vercel)
+├── cloudflare/        # Hono API → api.nyuchi.com (Cloudflare Worker)
 ├── apps/
-│   └── platform/      # Hono API → api.nyuchi.com (Cloudflare Worker)
+│   └── platform/      # Next.js frontend → platform.nyuchi.com (Vercel)
+│       └── admin/     # Admin section at /admin
+├── supabase/          # Supabase configuration
+├── products/          # Product connectors
 ├── packages/
 │   ├── database/      # Supabase client + schemas
 │   ├── auth/          # Authentication utilities
@@ -44,14 +47,14 @@ Nyuchi Africa Platform is a community-focused business platform for African entr
 
 ## Environment Variables
 
-### Frontend (Vercel - `web/`)
+### Frontend (Vercel - `apps/platform`)
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://aqjhuyqhgmmdutwzqvyv.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<publishable-key>
 NEXT_PUBLIC_API_URL=https://api.nyuchi.com
 ```
 
-### Backend (Cloudflare - `apps/platform`)
+### Backend (Cloudflare - `cloudflare/`)
 ```bash
 # Set via wrangler secret
 wrangler secret put SUPABASE_URL
@@ -66,8 +69,8 @@ wrangler secret put STRIPE_WEBHOOK_SECRET
 - `DOMAINS.md` - Complete domain documentation
 - `DEPLOYMENT.md` - Deployment guide
 - `.env.example` - Environment variable template
-- `apps/platform/wrangler.toml` - Cloudflare Worker config
-- `web/next.config.js` - Next.js config with image domains
+- `cloudflare/wrangler.toml` - Cloudflare Worker config
+- `apps/platform/next.config.js` - Next.js config with image domains
 
 ## Development
 
@@ -76,10 +79,10 @@ wrangler secret put STRIPE_WEBHOOK_SECRET
 npm install
 
 # Start frontend (localhost:3000)
-cd web && npm run dev
+cd apps/platform && npm run dev
 
 # Start API (localhost:8787)
-cd apps/platform && npm run dev
+cd cloudflare && npm run dev
 ```
 
 ## Deployment
@@ -90,7 +93,7 @@ cd apps/platform && npm run dev
 
 ### API (Cloudflare)
 ```bash
-cd apps/platform
+cd cloudflare
 wrangler deploy --env production
 ```
 
@@ -117,7 +120,7 @@ Configure these secrets in GitHub repository settings for CI/CD:
 ### Vercel (Frontend)
 - `VERCEL_TOKEN` - Vercel API token
 - `VERCEL_ORG_ID` - Vercel organization ID
-- `VERCEL_PROJECT_ID` - Vercel project ID for `web/`
+- `VERCEL_PROJECT_ID` - Vercel project ID for `apps/platform`
 
 ### Cloudflare (API)
 - `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers permissions
@@ -140,4 +143,4 @@ Configure these secrets in GitHub repository settings for CI/CD:
 - [DOMAINS.md](./DOMAINS.md) - Domain configuration
 - [DEPLOYMENT.md](./DEPLOYMENT.md) - Deployment guide
 - [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) - Database setup
-- [apps/platform/README.md](./apps/platform/README.md) - API documentation
+- [cloudflare/README.md](./cloudflare/README.md) - API documentation

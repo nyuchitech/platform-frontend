@@ -29,31 +29,31 @@ This document describes the domain configuration for the Nyuchi platform.
 | `http://127.0.0.1:54321` | Local Supabase |
 | `http://127.0.0.1:54323` | Local Supabase Studio |
 
-## Vercel Projects
+## Project Structure
 
-**Two separate Vercel projects** host the frontend applications:
-
-### 1. Platform App - Vercel Project #1
+### 1. Platform App (This Repo)
 - **Domain**: `platform.nyuchi.com`
-- **Source**: This repo (`web/`)
+- **Source**: `apps/platform/`
 - **Framework**: Next.js
-- **Root Directory**: `web`
+- **Hosting**: Vercel
+- **Root Directory**: `apps/platform`
 
-### 2. Marketing Site - Vercel Project #2
+### 2. API (This Repo)
+- **Domain**: `api.nyuchi.com`
+- **Source**: `cloudflare/`
+- **Framework**: Cloudflare Workers (Hono)
+- **Hosting**: Cloudflare
+- **Deployment**: `wrangler deploy --env production`
+
+### 3. Marketing Site (Separate Repo)
 - **Domain**: `www.nyuchi.com`
 - **Source**: Separate repository
 - **Framework**: Next.js (or other)
-- **Note**: This is a completely separate Vercel project, not part of this monorepo
-
-### 3. API - Cloudflare (not Vercel)
-- **Domain**: `api.nyuchi.com`
-- **Source**: This repo (`apps/platform`)
-- **Framework**: Cloudflare Workers (Hono)
-- **Deployment**: `wrangler deploy --env production`
+- **Hosting**: Vercel (separate project)
 
 ## Environment Variables
 
-### Frontend (Vercel - `web/`)
+### Frontend (Vercel - `apps/platform`)
 
 ```env
 # Supabase
@@ -64,7 +64,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-publishable-key>
 NEXT_PUBLIC_API_URL=https://api.nyuchi.com
 ```
 
-### Backend (Cloudflare - `apps/platform`)
+### Backend (Cloudflare - `cloudflare/`)
 
 Set these as Cloudflare Worker secrets:
 
@@ -87,7 +87,7 @@ The API (`api.nyuchi.com`) allows requests from:
 - `http://localhost:5173` - Vite dev
 - `http://localhost:3000` - Next.js dev
 
-Configured in: `apps/platform/src/index.ts`
+Configured in: `cloudflare/src/index.ts`
 
 ## Cloudflare R2 Setup
 
@@ -121,8 +121,8 @@ Ensure the following DNS records are configured in Cloudflare:
 
 ## Deployment Checklist
 
-- [ ] Deploy `web/` to Vercel with `platform.nyuchi.com` domain
-- [ ] Deploy `apps/platform` to Cloudflare with `api.nyuchi.com` route
+- [ ] Deploy `apps/platform` to Vercel with `platform.nyuchi.com` domain
+- [ ] Deploy `cloudflare/` to Cloudflare with `api.nyuchi.com` route
 - [ ] Configure R2 buckets with custom domains
 - [ ] Set all environment variables/secrets
 - [ ] Configure DNS records
