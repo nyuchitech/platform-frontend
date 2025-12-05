@@ -1,4 +1,4 @@
-name: 🇿🇼 Deploy Nyuchi Platform Frontend
+name: 🇿🇼 Deploy Nyuchi Platform
 
 on:
   push:
@@ -8,6 +8,11 @@ on:
 
 env:
   NODE_VERSION: '22'
+  # Domain URLs
+  FRONTEND_URL: 'https://platform.nyuchi.com'
+  API_URL: 'https://api.nyuchi.com'
+  COMMUNITY_ASSETS_URL: 'https://community-assets.nyuchi.com'
+  MEDIA_URL: 'https://media.nyuchi.com'
 
 jobs:
   test-and-build:
@@ -67,19 +72,43 @@ jobs:
       - name: 🏗️ Build for production
         run: npm run build
         
-      - name: 🚀 Deploy to Vercel
+      - name: 🚀 Deploy Frontend to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
-          
+          working-directory: apps/web
+
+      - name: ☁️ Deploy API to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/platform
+          command: deploy --env production
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          CLOUDFLARE_AI_GATEWAY_ENDPOINT: ${{ secrets.CLOUDFLARE_AI_GATEWAY_ENDPOINT }}
+
       - name: 🌐 Ubuntu Success Notification
         run: |
           echo "🇿🇼 Nyuchi Africa Platform deployed successfully!"
           echo "✅ Ubuntu Philosophy: 'I am because we are'"
-          echo "🎯 Live at: platform.nyuchi.com"
+          echo ""
+          echo "📦 Deployments:"
+          echo "  🎯 Frontend: ${{ env.FRONTEND_URL }} (Vercel)"
+          echo "  🔧 API: ${{ env.API_URL }} (Cloudflare Worker)"
+          echo ""
+          echo "📁 Storage:"
+          echo "  🖼️ Community Assets: ${{ env.COMMUNITY_ASSETS_URL }}"
+          echo "  🎬 Media: ${{ env.MEDIA_URL }}"
+          echo ""
           echo "🟢 Zimbabwe Green (#00A651) theme active"
           echo "🟠 Ubuntu Orange (#E95420) community features ready"
           
