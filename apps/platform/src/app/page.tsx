@@ -8,6 +8,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Box,
   Typography,
@@ -151,74 +152,118 @@ export default function LandingPage() {
       {/* Hero Section */}
       <Box
         sx={{
-          py: { xs: 6, md: 10 },
-          textAlign: 'center',
+          py: { xs: 6, md: 0 },
           background: `linear-gradient(135deg, ${nyuchiColors.charcoal} 0%, ${nyuchiColors.charcoal}ee 100%)`,
           color: 'white',
+          overflow: 'hidden',
         }}
       >
-        <Container maxWidth="md">
-          <Typography
-            variant="h2"
-            sx={{
-              fontFamily: 'Playfair Display',
-              fontWeight: 700,
-              mb: 2,
-              fontSize: { xs: '2rem', md: '3rem' },
-            }}
-          >
-            Platform for African Entrepreneurs
-          </Typography>
-          <Typography
-            variant="h5"
-            sx={{
-              mb: 1,
-              opacity: 0.9,
-              fontStyle: 'italic',
-              color: nyuchiColors.sunsetOrange,
-            }}
-          >
-            &quot;I am because we are&quot;
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{ mb: 4, opacity: 0.8, maxWidth: 600, mx: 'auto' }}
-          >
-            Join a thriving community of African entrepreneurs. Connect, collaborate,
-            and grow together with Ubuntu philosophy at our core.
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Button
-              component={Link}
-              href="/sign-up"
-              variant="contained"
-              size="large"
-              endIcon={<ArrowForwardIcon />}
-              sx={{
-                borderRadius: '25px',
-                px: 4,
-                bgcolor: nyuchiColors.zimbabweGreen,
-                '&:hover': { bgcolor: nyuchiColors.zimbabweGreen + 'dd' },
-              }}
-            >
-              Join the Community
-            </Button>
-            <Button
-              component={Link}
-              href="/community"
-              variant="outlined"
-              size="large"
-              sx={{
-                borderRadius: '25px',
-                px: 4,
-                borderColor: 'white',
-                color: 'white',
-                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              Explore Community
-            </Button>
-          </Box>
+        <Container maxWidth="lg">
+          <Grid container spacing={4} alignItems="center">
+            {/* Text Content */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{ py: { xs: 4, md: 10 }, textAlign: { xs: 'center', md: 'left' } }}>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontFamily: 'Playfair Display',
+                    fontWeight: 700,
+                    mb: 2,
+                    fontSize: { xs: '2rem', md: '3rem' },
+                  }}
+                >
+                  Platform for African Entrepreneurs
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 1,
+                    opacity: 0.9,
+                    fontStyle: 'italic',
+                    color: nyuchiColors.sunsetOrange,
+                  }}
+                >
+                  &quot;I am because we are&quot;
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 4, opacity: 0.8, maxWidth: 500 }}
+                >
+                  Join a thriving community of African entrepreneurs. Connect, collaborate,
+                  and grow together with Ubuntu philosophy at our core.
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'center', md: 'flex-start' }, flexWrap: 'wrap' }}>
+                  <Button
+                    component={Link}
+                    href="/sign-up"
+                    variant="contained"
+                    size="large"
+                    endIcon={<ArrowForwardIcon />}
+                    sx={{
+                      borderRadius: '25px',
+                      px: 4,
+                      bgcolor: nyuchiColors.zimbabweGreen,
+                      '&:hover': { bgcolor: nyuchiColors.zimbabweGreen + 'dd' },
+                    }}
+                  >
+                    Join the Community
+                  </Button>
+                  <Button
+                    component={Link}
+                    href="/community"
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                      borderRadius: '25px',
+                      px: 4,
+                      borderColor: 'white',
+                      color: 'white',
+                      '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+                    }}
+                  >
+                    Explore Community
+                  </Button>
+                </Box>
+              </Box>
+            </Grid>
+
+            {/* Hero Image */}
+            <Grid item xs={12} md={6}>
+              <Box
+                sx={{
+                  position: 'relative',
+                  height: { xs: 300, md: 500 },
+                  borderRadius: { xs: 2, md: 0 },
+                  overflow: 'hidden',
+                  mx: { xs: 2, md: 0 },
+                  mb: { xs: 4, md: 0 },
+                }}
+              >
+                <Image
+                  src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1920"
+                  alt="Victoria Falls, Zimbabwe - The Smoke That Thunders"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  priority
+                />
+                {/* Image overlay with gradient */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    p: 2,
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                  }}
+                >
+                  <Typography variant="caption" sx={{ color: 'white', opacity: 0.9 }}>
+                    Victoria Falls - Mosi-oa-Tunya &quot;The Smoke That Thunders&quot;
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
