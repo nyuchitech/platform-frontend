@@ -1,4 +1,4 @@
-name: 🇿🇼 Deploy Nyuchi Platform Frontend
+name: 🇿🇼 Deploy Nyuchi Platform
 
 on:
   push:
@@ -8,6 +8,11 @@ on:
 
 env:
   NODE_VERSION: '22'
+  # Domain URLs
+  FRONTEND_URL: 'https://platform.nyuchi.com'
+  API_URL: 'https://api.nyuchi.com'
+  COMMUNITY_ASSETS_URL: 'https://community-assets.nyuchi.com'
+  MEDIA_URL: 'https://media.nyuchi.com'
 
 jobs:
   test-and-build:
@@ -41,45 +46,117 @@ jobs:
         with:
           name: build-files
           path: |
-            apps/web/.next/
-            apps/platform/.wrangler/
+            apps/platform/.next/
+            cloudflare/.wrangler/
           retention-days: 1
+
+  deploy-preview:
+    name: 🔍 Deploy Preview
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📋 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build for preview
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: 🔍 Deploy Preview to Vercel
+        uses: amondnet/vercel-action@v25
+        id: vercel-preview
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: apps/platform
+
+      - name: 💬 Comment Preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🔍 **Preview Deployment Ready!**\n\n🌐 Preview URL: ${{ steps.vercel-preview.outputs.preview-url }}\n\n_Ubuntu Philosophy: "I am because we are"_`
+            })
 
   deploy:
     name: 🚀 Deploy to Production
     needs: test-and-build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
-        
+
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          
+
       - name: 📋 Install dependencies
         run: npm ci
-        
+
       - name: 🏗️ Build for production
         run: npm run build
-        
-      - name: 🚀 Deploy to Vercel
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: 🚀 Deploy Platform to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
-          
+          working-directory: apps/platform
+
+      - name: ☁️ Deploy API to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare
+          command: deploy --env production
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          CLOUDFLARE_AI_GATEWAY_ENDPOINT: ${{ secrets.CLOUDFLARE_AI_GATEWAY_ENDPOINT }}
+
       - name: 🌐 Ubuntu Success Notification
         run: |
           echo "🇿🇼 Nyuchi Africa Platform deployed successfully!"
           echo "✅ Ubuntu Philosophy: 'I am because we are'"
-          echo "🎯 Live at: platform.nyuchi.com"
+          echo ""
+          echo "📦 Deployments:"
+          echo "  🎯 Frontend: ${{ env.FRONTEND_URL }} (Vercel)"
+          echo "  🔧 API: ${{ env.API_URL }} (Cloudflare Worker)"
+          echo ""
+          echo "📁 Storage:"
+          echo "  🖼️ Community Assets: ${{ env.COMMUNITY_ASSETS_URL }}"
+          echo "  🎬 Media: ${{ env.MEDIA_URL }}"
+          echo ""
           echo "🟢 Zimbabwe Green (#00A651) theme active"
           echo "🟠 Ubuntu Orange (#E95420) community features ready"
           
@@ -96,14 +173,14 @@ jobs:
           echo "🟠 Validating Ubuntu Philosophy: 'I am because we are'"
 
           # Check for community-first routing
-          if grep -r "community" apps/web/src/app/; then
+          if grep -r "community" apps/platform/src/app/; then
             echo "✅ Community features found in routing"
           else
             echo "⚠️ No community features in routing (optional)"
           fi
 
           # Check for Zimbabwe theme colors
-          if grep -r "#00A651\|#FDD116\|#EF3340\|zimbabwe" apps/web/src/; then
+          if grep -r "#00A651\|#FDD116\|#EF3340\|zimbabwe" apps/platform/src/; then
             echo "✅ Zimbabwe flag colors preserved"
           else
             echo "❌ Missing Zimbabwe flag colors"
@@ -111,7 +188,7 @@ jobs:
           fi
 
           # Check for Ubuntu philosophy references
-          if grep -r "I am because we are\|Ubuntu\|ubuntu" apps/ packages/ README*.md 2>/dev/null; then
+          if grep -r "I am because we are\|Ubuntu\|ubuntu" apps/ cloudflare/ packages/ README*.md 2>/dev/null; then
             echo "✅ Ubuntu philosophy documented"
           else
             echo "❌ Missing Ubuntu philosophy documentation"

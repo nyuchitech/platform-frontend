@@ -1,10 +1,10 @@
 {
-  "name": "@nyuchi/web",
+  "name": "@nyuchi/www",
   "version": "1.0.0",
-  "description": "🇿🇼 Nyuchi Platform - Frontend application",
+  "description": "Nyuchi Africa Marketing Site - www.nyuchi.com",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0",
@@ -12,14 +12,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@nyuchi/database": "*",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.0",
     "@mui/material": "^5.15.0",
-    "@mui/x-data-grid": "^6.18.0",
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.45.0",
     "next": "^15.0.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
