@@ -1,405 +1,391 @@
 /**
- * 🇿🇼 Nyuchi Platform - Landing Page
- * "I am because we are"
+ * Nyuchi Platform - Landing Page
+ * Built with React Native Paper + Brand V5
+ * "I am because we are" - Ubuntu Philosophy
  */
 
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
-import {
-  Box,
-  Typography,
-  Button,
-  Container,
-  Grid,
-  Card,
-  CardContent,
-} from '@mui/material';
-import {
-  People as PeopleIcon,
-  TravelExplore as TravelIcon,
-  Leaderboard as LeaderboardIcon,
-  Business as BusinessIcon,
-  ArrowForward as ArrowForwardIcon,
-} from '@mui/icons-material';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { Text, Button, Card } from 'react-native-paper';
 import { useAuth } from '@/lib/auth-context';
-import { nyuchiColors } from '@/theme/zimbabwe-theme';
+import { useThemeMode } from '@/components/PaperProvider';
+import { GlobalLayout } from '@/components/GlobalLayout';
+import { nyuchiColors, borderRadius } from '@/theme/nyuchi-theme';
 
 const communityFeatures = [
   {
-    icon: <PeopleIcon sx={{ fontSize: 40 }} />,
+    emoji: '👥',
     title: 'Community Directory',
     description: 'Discover and connect with African entrepreneurs and businesses.',
     href: '/community/directory',
-    free: true,
   },
   {
-    icon: <TravelIcon sx={{ fontSize: 40 }} />,
+    emoji: '✈️',
     title: 'Travel Directory',
     description: 'Explore travel businesses and destinations across Africa.',
     href: '/community/travel-directory',
-    free: true,
   },
   {
-    icon: <LeaderboardIcon sx={{ fontSize: 40 }} />,
+    emoji: '🏆',
     title: 'Ubuntu Leaderboard',
     description: 'Celebrate community contributors and their impact.',
     href: '/community/leaderboard',
-    free: true,
   },
   {
-    icon: <BusinessIcon sx={{ fontSize: 40 }} />,
+    emoji: '🤝',
     title: 'Get Involved',
     description: 'Join our community as a volunteer, partner, or contributor.',
     href: '/get-involved',
-    free: true,
   },
 ];
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return width;
+}
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { isDark } = useThemeMode();
+  const width = useWindowWidth();
 
-  // Redirect authenticated users to dashboard
+  const isDesktop = width >= 768;
+
   useEffect(() => {
     if (user && !loading) {
       router.push('/dashboard');
     }
   }, [user, loading, router]);
 
+  const colors = isDark ? nyuchiColors.dark : nyuchiColors.light;
+
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: nyuchiColors.gray50 }}>
-      {/* Zimbabwe Flag Strip */}
-      <Box
-        sx={{
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          width: '6px',
-          height: '100%',
-          background: `linear-gradient(to bottom,
-            ${nyuchiColors.zimbabweGreen} 0%,
-            ${nyuchiColors.zimbabweGreen} 14.28%,
-            ${nyuchiColors.zimbabweYellow} 14.28%,
-            ${nyuchiColors.zimbabweYellow} 28.56%,
-            ${nyuchiColors.zimbabweRed} 28.56%,
-            ${nyuchiColors.zimbabweRed} 42.84%,
-            ${nyuchiColors.zimbabweBlack} 42.84%,
-            ${nyuchiColors.zimbabweBlack} 57.12%,
-            ${nyuchiColors.zimbabweRed} 57.12%,
-            ${nyuchiColors.zimbabweRed} 71.4%,
-            ${nyuchiColors.zimbabweYellow} 71.4%,
-            ${nyuchiColors.zimbabweYellow} 85.68%,
-            ${nyuchiColors.zimbabweGreen} 85.68%,
-            ${nyuchiColors.zimbabweGreen} 100%
-          )`,
-          zIndex: 1000,
-        }}
-      />
-
-      {/* Header */}
-      <Box
-        component="header"
-        sx={{
-          py: 2,
-          px: 3,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'white',
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{
-            fontFamily: 'Playfair Display',
-            fontWeight: 700,
-            color: nyuchiColors.charcoal,
-          }}
-        >
-          Nyuchi Africa
-        </Typography>
-
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            component={Link}
-            href="/sign-in"
-            variant="outlined"
-            sx={{ borderRadius: '20px' }}
-          >
-            Sign In
-          </Button>
-          <Button
-            component={Link}
-            href="/sign-up"
-            variant="contained"
-            sx={{
-              borderRadius: '20px',
-              bgcolor: nyuchiColors.sunsetOrange,
-              '&:hover': { bgcolor: nyuchiColors.sunsetOrange + 'dd' },
-            }}
-          >
-            Get Started
-          </Button>
-        </Box>
-      </Box>
-
+    <GlobalLayout>
       {/* Hero Section */}
-      <Box
-        sx={{
-          py: { xs: 6, md: 0 },
-          background: `linear-gradient(135deg, ${nyuchiColors.charcoal} 0%, ${nyuchiColors.charcoal}ee 100%)`,
-          color: 'white',
-          overflow: 'hidden',
-        }}
-      >
-        <Container maxWidth="lg">
-          <Grid container spacing={4} alignItems="center">
-            {/* Text Content */}
-            <Grid item xs={12} md={6}>
-              <Box sx={{ py: { xs: 4, md: 10 }, textAlign: { xs: 'center', md: 'left' } }}>
-                <Typography
-                  variant="h2"
-                  sx={{
-                    fontFamily: 'Playfair Display',
-                    fontWeight: 700,
-                    mb: 2,
-                    fontSize: { xs: '2rem', md: '3rem' },
-                  }}
-                >
-                  Platform for African Entrepreneurs
-                </Typography>
-                <Typography
-                  variant="h5"
-                  sx={{
-                    mb: 1,
-                    opacity: 0.9,
-                    fontStyle: 'italic',
-                    color: nyuchiColors.sunsetOrange,
-                  }}
-                >
-                  &quot;I am because we are&quot;
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ mb: 4, opacity: 0.8, maxWidth: 500 }}
-                >
-                  Join a thriving community of African entrepreneurs. Connect, collaborate,
-                  and grow together with Ubuntu philosophy at our core.
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'center', md: 'flex-start' }, flexWrap: 'wrap' }}>
-                  <Button
-                    component={Link}
-                    href="/sign-up"
-                    variant="contained"
-                    size="large"
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{
-                      borderRadius: '25px',
-                      px: 4,
-                      bgcolor: nyuchiColors.zimbabweGreen,
-                      '&:hover': { bgcolor: nyuchiColors.zimbabweGreen + 'dd' },
-                    }}
-                  >
-                    Join the Community
-                  </Button>
-                  <Button
-                    component={Link}
-                    href="/community"
-                    variant="outlined"
-                    size="large"
-                    sx={{
-                      borderRadius: '25px',
-                      px: 4,
-                      borderColor: 'white',
-                      color: 'white',
-                      '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
-                    }}
-                  >
-                    Explore Community
-                  </Button>
-                </Box>
-              </Box>
-            </Grid>
+      <View style={[styles.heroSection, { backgroundColor: colors.background }]}>
+        <View style={[styles.heroContent, isDesktop && styles.heroContentDesktop]}>
+          <View style={[styles.heroText, isDesktop && styles.heroTextDesktop]}>
+            <Text style={[styles.heroTitle, { color: colors.text }]}>
+              Platform for African{'\n'}Entrepreneurs
+            </Text>
 
-            {/* Hero Image */}
-            <Grid item xs={12} md={6}>
-              <Box
-                sx={{
-                  position: 'relative',
-                  height: { xs: 300, md: 500 },
-                  borderRadius: { xs: 2, md: 0 },
-                  overflow: 'hidden',
-                  mx: { xs: 2, md: 0 },
-                  mb: { xs: 4, md: 0 },
-                }}
+            <Text style={[styles.ubuntuTagline, { color: nyuchiColors.sunsetDeep }]}>
+              "I am because we are"
+            </Text>
+
+            <Text style={[styles.heroDescription, { color: colors.textSecondary }]}>
+              Join a thriving community of African entrepreneurs. Connect, collaborate,
+              and grow together with Ubuntu philosophy at our core.
+            </Text>
+
+            <View style={styles.heroButtons}>
+              <Button
+                mode="contained"
+                style={[styles.buttonPrimary, { backgroundColor: nyuchiColors.sunsetDeep }]}
+                labelStyle={[styles.buttonLabel, { color: '#FFFFFF' }]}
+                contentStyle={styles.buttonContent}
+                onPress={() => router.push('/sign-up')}
               >
-                <Image
-                  src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1920"
-                  alt="Victoria Falls, Zimbabwe - The Smoke That Thunders"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  priority
-                />
-                {/* Image overlay with gradient */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    p: 2,
-                    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                  }}
-                >
-                  <Typography variant="caption" sx={{ color: 'white', opacity: 0.9 }}>
-                    Victoria Falls - Mosi-oa-Tunya &quot;The Smoke That Thunders&quot;
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+                Join the Community
+              </Button>
+              <Button
+                mode="contained"
+                style={[styles.buttonSecondary, { backgroundColor: nyuchiColors.purple }]}
+                labelStyle={[styles.buttonLabel, { color: '#FFFFFF' }]}
+                contentStyle={styles.buttonContent}
+                onPress={() => router.push('/community')}
+              >
+                Explore
+              </Button>
+              <Button
+                mode="outlined"
+                style={[styles.buttonOutline, { borderColor: colors.border }]}
+                labelStyle={[styles.buttonLabel, { color: colors.text }]}
+                contentStyle={styles.buttonContent}
+                onPress={() => router.push('/sign-in')}
+              >
+                Sign In
+              </Button>
+            </View>
+          </View>
 
-      {/* Community Features - Always Free */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography
-            variant="overline"
-            sx={{ color: nyuchiColors.zimbabweGreen, fontWeight: 600 }}
-          >
-            Ubuntu Philosophy
-          </Typography>
-          <Typography
-            variant="h4"
-            sx={{
-              fontFamily: 'Playfair Display',
-              fontWeight: 700,
-              color: nyuchiColors.charcoal,
-              mb: 1,
-            }}
-          >
-            Community Features - Always Free
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Explore our community without any barriers. Because we believe in collective growth.
-          </Typography>
-        </Box>
+          {isDesktop && (
+            <View style={styles.heroImageContainer}>
+              <Image
+                src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=600"
+                alt="Victoria Falls"
+                width={480}
+                height={320}
+                style={{ objectFit: 'cover', borderRadius: borderRadius.card }}
+                priority
+              />
+              <Text style={[styles.imageCaption, { color: colors.textSecondary }]}>
+                Victoria Falls - Mosi-oa-Tunya
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
 
-        <Grid container spacing={3}>
+      {/* Features Section */}
+      <View style={[styles.featuresSection, { backgroundColor: colors.card }]}>
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionLabel, { color: nyuchiColors.green }]}>
+            UBUNTU PHILOSOPHY
+          </Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Community Features
+          </Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+            Always free. Because we believe in collective growth.
+          </Text>
+        </View>
+
+        <View style={[styles.featuresGrid, isDesktop && styles.featuresGridDesktop]}>
           {communityFeatures.map((feature) => (
-            <Grid item xs={12} sm={6} md={3} key={feature.title}>
-              <Card
-                component={Link}
-                href={feature.href}
-                sx={{
-                  height: '100%',
-                  textDecoration: 'none',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: 4,
-                  },
-                }}
-              >
-                <CardContent sx={{ textAlign: 'center', py: 4 }}>
-                  <Box sx={{ color: nyuchiColors.zimbabweGreen, mb: 2 }}>
-                    {feature.icon}
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 600, color: nyuchiColors.charcoal, mb: 1 }}
-                  >
-                    {feature.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {feature.description}
-                  </Typography>
-                  {feature.free && (
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: 'inline-block',
-                        mt: 2,
-                        px: 2,
-                        py: 0.5,
-                        bgcolor: nyuchiColors.zimbabweGreen + '20',
-                        color: nyuchiColors.zimbabweGreen,
-                        borderRadius: '12px',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Always Free
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
+            <Pressable
+              key={feature.title}
+              onPress={() => router.push(feature.href)}
+              style={{ flex: isDesktop ? 1 : undefined }}
+            >
+              {({ pressed }) => (
+                <Card
+                  style={[
+                    styles.featureCard,
+                    { backgroundColor: colors.background, opacity: pressed ? 0.9 : 1 },
+                  ]}
+                  mode="outlined"
+                >
+                  <Card.Content style={styles.featureCardContent}>
+                    <Text style={styles.featureEmoji}>{feature.emoji}</Text>
+                    <Text style={[styles.featureTitle, { color: colors.text }]}>
+                      {feature.title}
+                    </Text>
+                    <Text style={[styles.featureDescription, { color: colors.textSecondary }]}>
+                      {feature.description}
+                    </Text>
+                    <View style={[styles.freeBadge, { backgroundColor: nyuchiColors.green + '15' }]}>
+                      <Text style={[styles.freeBadgeText, { color: nyuchiColors.green }]}>
+                        Always Free
+                      </Text>
+                    </View>
+                  </Card.Content>
+                </Card>
+              )}
+            </Pressable>
           ))}
-        </Grid>
-      </Container>
+        </View>
+      </View>
 
       {/* CTA Section */}
-      <Box sx={{ py: 8, bgcolor: nyuchiColors.charcoal, color: 'white', textAlign: 'center' }}>
-        <Container maxWidth="md">
-          <Typography
-            variant="h4"
-            sx={{
-              fontFamily: 'Playfair Display',
-              fontWeight: 700,
-              mb: 2,
-            }}
-          >
-            Ready to grow with us?
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 4, opacity: 0.8 }}>
-            Create your free account and start connecting with the African entrepreneur community.
-          </Typography>
-          <Button
-            component={Link}
-            href="/sign-up"
-            variant="contained"
-            size="large"
-            sx={{
-              borderRadius: '25px',
-              px: 5,
-              bgcolor: nyuchiColors.sunsetOrange,
-              '&:hover': { bgcolor: nyuchiColors.sunsetOrange + 'dd' },
-            }}
-          >
-            Create Free Account
-          </Button>
-        </Container>
-      </Box>
-
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          py: 4,
-          px: 3,
-          textAlign: 'center',
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'white',
-        }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          © {new Date().getFullYear()} Nyuchi Africa. Built with Ubuntu philosophy.
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{ mt: 1, fontStyle: 'italic', color: nyuchiColors.sunsetOrange }}
+      <View style={[styles.ctaSection, { backgroundColor: colors.background }]}>
+        <Text style={[styles.ctaTitle, { color: colors.text }]}>
+          Ready to grow with us?
+        </Text>
+        <Text style={[styles.ctaDescription, { color: colors.textSecondary }]}>
+          Create your free account and connect with the community.
+        </Text>
+        <Button
+          mode="contained"
+          style={[styles.buttonPrimary, { backgroundColor: nyuchiColors.sunsetDeep }]}
+          labelStyle={[styles.buttonLabel, { color: '#FFFFFF' }]}
+          contentStyle={styles.buttonContent}
+          onPress={() => router.push('/sign-up')}
         >
-          &quot;I am because we are&quot;
-        </Typography>
-      </Box>
-    </Box>
+          Create Free Account
+        </Button>
+      </View>
+    </GlobalLayout>
   );
 }
+
+const styles = StyleSheet.create({
+  // Buttons
+  buttonPrimary: {
+    borderRadius: borderRadius.button,
+  },
+  buttonSecondary: {
+    borderRadius: borderRadius.button,
+  },
+  buttonOutline: {
+    borderRadius: borderRadius.button,
+    borderWidth: 1,
+  },
+  buttonLabel: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontWeight: '600',
+    fontSize: 14,
+    marginVertical: 0,
+  },
+  buttonContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+  },
+
+  // Hero
+  heroSection: {
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+  },
+  heroContent: {
+    maxWidth: 1200,
+    marginHorizontal: 'auto',
+    width: '100%',
+  },
+  heroContentDesktop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 48,
+  },
+  heroText: {
+    flex: 1,
+  },
+  heroTextDesktop: {
+    alignItems: 'flex-start',
+  },
+  heroTitle: {
+    fontFamily: 'Noto Serif, Georgia, serif',
+    fontSize: 40,
+    fontWeight: '700',
+    lineHeight: 48,
+    marginBottom: 12,
+  },
+  ubuntuTagline: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 18,
+    fontStyle: 'italic',
+    marginBottom: 16,
+  },
+  heroDescription: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 24,
+    maxWidth: 480,
+  },
+  heroButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  heroImageContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  imageCaption: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 12,
+    marginTop: 8,
+  },
+
+  // Features
+  featuresSection: {
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+  },
+  sectionHeader: {
+    marginBottom: 32,
+    maxWidth: 480,
+    marginHorizontal: 'auto',
+    alignItems: 'center',
+  },
+  sectionLabel: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  sectionTitle: {
+    fontFamily: 'Noto Serif, Georgia, serif',
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  sectionSubtitle: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  featuresGrid: {
+    maxWidth: 1200,
+    marginHorizontal: 'auto',
+    width: '100%',
+    gap: 16,
+  },
+  featuresGridDesktop: {
+    flexDirection: 'row',
+  },
+  featureCard: {
+    borderRadius: borderRadius.card,
+    marginBottom: 12,
+  },
+  featureCardContent: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+  },
+  featureEmoji: {
+    fontSize: 32,
+    marginBottom: 12,
+  },
+  featureTitle: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  featureDescription: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  freeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  freeBadgeText: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+
+  // CTA
+  ctaSection: {
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+  },
+  ctaTitle: {
+    fontFamily: 'Noto Serif, Georgia, serif',
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ctaDescription: {
+    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    fontSize: 15,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+});
