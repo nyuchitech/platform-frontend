@@ -34,7 +34,7 @@ const nextConfig = {
     ],
   },
   // React Native Web configuration
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       'react-native$': 'react-native-web',

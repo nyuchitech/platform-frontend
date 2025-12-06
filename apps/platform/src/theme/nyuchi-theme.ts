@@ -344,7 +344,7 @@ export const assets = {
 };
 
 // Default export
-export default {
+const nyuchiTheme = {
   light: nyuchiLightTheme,
   dark: nyuchiDarkTheme,
   colors: nyuchiColors,
@@ -354,3 +354,5 @@ export default {
   typeScale,
   assets,
 };
+
+export default nyuchiTheme;
