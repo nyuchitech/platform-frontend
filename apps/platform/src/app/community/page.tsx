@@ -8,11 +8,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { View, StyleSheet, ScrollView, Pressable, Modal } from 'react-native';
-import { Text, Button, Card, ActivityIndicator, Divider } from 'react-native-paper';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { Text, Button, Card, ActivityIndicator } from 'react-native-paper';
 import { useThemeMode } from '@/components/PaperProvider';
-import { ZimbabweFlagStrip } from '@/components/ZimbabweFlagStrip';
+import { GlobalLayout } from '@/components/GlobalLayout';
 import { nyuchiColors, borderRadius } from '@/theme/nyuchi-theme';
 
 interface CommunityStats {
@@ -22,14 +21,6 @@ interface CommunityStats {
   top_ubuntu_score: number;
   total_travel_businesses?: number;
 }
-
-const menuLinks = [
-  { label: 'Home', href: 'https://www.nyuchi.com', external: true },
-  { label: 'Community', href: '/community', external: false },
-  { label: 'Get Involved', href: '/get-involved', external: false },
-  { label: 'Sign In', href: '/sign-in', external: false },
-  { label: 'Get Started', href: '/sign-up', external: false, primary: true },
-];
 
 const communityFeatures = [
   {
@@ -83,16 +74,11 @@ export default function CommunityPage() {
   const router = useRouter();
   const { isDark } = useThemeMode();
   const width = useWindowWidth();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [stats, setStats] = useState<CommunityStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   const isDesktop = width >= 768;
-  const isMobile = width < 768;
   const colors = isDark ? nyuchiColors.dark : nyuchiColors.light;
-  const logoSrc = isDark
-    ? 'https://assets.nyuchi.com/logos/nyuchi/Nyuchi_Africa_Logo_dark.svg'
-    : 'https://assets.nyuchi.com/logos/nyuchi/Nyuchi_Africa_Logo_light.svg';
 
   useEffect(() => {
     async function fetchStats() {
@@ -112,272 +98,117 @@ export default function CommunityPage() {
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {!isMobile && <ZimbabweFlagStrip />}
+    <GlobalLayout>
+      {/* Hero Section */}
+      <View style={[styles.heroSection, { backgroundColor: nyuchiColors.sunsetDeep }]}>
+        <View style={styles.heroContent}>
+          <Text style={styles.heroTitle}>Nyuchi Community</Text>
+          <Text style={styles.heroSubtitle}>&quot;I am because we are&quot; - Ubuntu Philosophy</Text>
+          <Text style={styles.heroDescription}>
+            Welcome to the Nyuchi Africa community. Here, we celebrate African entrepreneurship,
+            share knowledge, and support each other in building a stronger future together.
+          </Text>
 
-      {/* Mobile Menu Modal */}
-      <Modal
-        visible={menuOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setMenuOpen(false)}
-      >
-        <View style={styles.menuOverlay}>
-          <View style={[styles.menuPanel, { backgroundColor: colors.card }]}>
-            <View style={styles.menuHeader}>
-              <Image
-                src={logoSrc}
-                alt="Nyuchi Africa"
-                width={140}
-                height={36}
-                style={{ objectFit: 'contain' }}
-              />
-              <Pressable style={styles.iconButton} onPress={() => setMenuOpen(false)}>
-                <Text style={[styles.iconText, { color: colors.text }]}>✕</Text>
-              </Pressable>
+          {/* Quick Stats */}
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statEmoji}>👥</Text>
+              {loading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Text style={styles.statValue}>{stats?.total_members || 0} Members</Text>
+              )}
             </View>
-            <Divider style={{ backgroundColor: colors.border }} />
-            <View style={styles.menuLinks}>
-              {menuLinks.map((link) => (
-                <Pressable
-                  key={link.label}
-                  onPress={() => {
-                    setMenuOpen(false);
-                    if (link.external) {
-                      window.open(link.href, '_blank');
-                    } else {
-                      router.push(link.href);
-                    }
-                  }}
-                  style={({ pressed }) => [
-                    styles.menuLink,
-                    link.primary && { backgroundColor: nyuchiColors.sunsetDeep },
-                    pressed && { opacity: 0.8 },
+            <View style={styles.statItem}>
+              <Text style={styles.statEmoji}>📈</Text>
+              <Text style={styles.statValue}>Growing Together</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Features Section */}
+      <View style={[styles.featuresSection, { backgroundColor: colors.card }]}>
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionLabel, { color: nyuchiColors.green }]}>
+            EXPLORE
+          </Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Community Features
+          </Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+            Always free. Because we believe in collective growth.
+          </Text>
+        </View>
+
+        <View style={[styles.featuresGrid, isDesktop && styles.featuresGridDesktop]}>
+          {communityFeatures.map((feature) => (
+            <Pressable
+              key={feature.title}
+              onPress={() => router.push(feature.href)}
+              style={{ flex: isDesktop ? 1 : undefined }}
+            >
+              {({ pressed }) => (
+                <Card
+                  style={[
+                    styles.featureCard,
+                    { backgroundColor: colors.background, opacity: pressed ? 0.9 : 1 },
                   ]}
-                >
-                  <Text style={[
-                    styles.menuLinkText,
-                    { color: link.primary ? '#FFFFFF' : colors.text }
-                  ]}>
-                    {link.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-          <View style={styles.headerContent}>
-            <Pressable onPress={() => router.push('/')}>
-              <Image
-                src={logoSrc}
-                alt="Nyuchi Africa"
-                width={isMobile ? 180 : 240}
-                height={isMobile ? 40 : 52}
-                style={{ objectFit: 'contain' }}
-                priority
-              />
-            </Pressable>
-
-            {/* Desktop Navigation */}
-            {!isMobile && (
-              <View style={styles.headerButtons}>
-                <Button
                   mode="outlined"
-                  style={[styles.buttonOutline, { borderColor: colors.border }]}
-                  labelStyle={[styles.buttonLabelSmall, { color: colors.text }]}
-                  contentStyle={styles.buttonContentSmall}
-                  onPress={() => router.push('/sign-in')}
                 >
-                  Sign In
-                </Button>
-                <Button
-                  mode="contained"
-                  style={[styles.buttonPrimary, { backgroundColor: nyuchiColors.sunsetDeep }]}
-                  labelStyle={[styles.buttonLabelSmall, { color: '#FFFFFF' }]}
-                  contentStyle={styles.buttonContentSmall}
-                  onPress={() => router.push('/sign-up')}
-                >
-                  Get Started
-                </Button>
-              </View>
-            )}
-
-            {/* Mobile Navigation */}
-            {isMobile && (
-              <View style={styles.mobileNav}>
-                <Pressable style={styles.iconButton} onPress={() => router.push('/sign-in')}>
-                  <Text style={[styles.iconText, { color: colors.text }]}>👤</Text>
-                </Pressable>
-                <Pressable style={styles.iconButton} onPress={() => setMenuOpen(true)}>
-                  <Text style={[styles.iconText, { color: colors.text }]}>☰</Text>
-                </Pressable>
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Hero Section */}
-        <View style={[styles.heroSection, { backgroundColor: nyuchiColors.sunsetDeep }]}>
-          <View style={styles.heroContent}>
-            <Text style={styles.heroTitle}>Nyuchi Community</Text>
-            <Text style={styles.heroSubtitle}>&quot;I am because we are&quot; - Ubuntu Philosophy</Text>
-            <Text style={styles.heroDescription}>
-              Welcome to the Nyuchi Africa community. Here, we celebrate African entrepreneurship,
-              share knowledge, and support each other in building a stronger future together.
-            </Text>
-
-            {/* Quick Stats */}
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statEmoji}>👥</Text>
-                {loading ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.statValue}>{stats?.total_members || 0} Members</Text>
-                )}
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statEmoji}>📈</Text>
-                <Text style={styles.statValue}>Growing Together</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Features Section */}
-        <View style={[styles.featuresSection, { backgroundColor: colors.card }]}>
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionLabel, { color: nyuchiColors.green }]}>
-              EXPLORE
-            </Text>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Community Features
-            </Text>
-            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-              Always free. Because we believe in collective growth.
-            </Text>
-          </View>
-
-          <View style={[styles.featuresGrid, isDesktop && styles.featuresGridDesktop]}>
-            {communityFeatures.map((feature) => (
-              <Pressable
-                key={feature.title}
-                onPress={() => router.push(feature.href)}
-                style={{ flex: isDesktop ? 1 : undefined }}
-              >
-                {({ pressed }) => (
-                  <Card
-                    style={[
-                      styles.featureCard,
-                      { backgroundColor: colors.background, opacity: pressed ? 0.9 : 1 },
-                    ]}
-                    mode="outlined"
-                  >
-                    <Card.Content style={styles.featureCardContent}>
-                      <Text style={styles.featureEmoji}>{feature.emoji}</Text>
-                      <Text style={[styles.featureTitle, { color: colors.text }]}>
-                        {feature.title}
+                  <Card.Content style={styles.featureCardContent}>
+                    <Text style={styles.featureEmoji}>{feature.emoji}</Text>
+                    <Text style={[styles.featureTitle, { color: colors.text }]}>
+                      {feature.title}
+                    </Text>
+                    <Text style={[styles.featureDescription, { color: colors.textSecondary }]}>
+                      {feature.description}
+                    </Text>
+                    {loading ? (
+                      <ActivityIndicator size="small" color={nyuchiColors.sunsetDeep} style={{ marginVertical: 8 }} />
+                    ) : (
+                      <Text style={[styles.featureStat, { color: nyuchiColors.sunsetDeep }]}>
+                        {stats?.[feature.statKey]?.toLocaleString() || '0'}
                       </Text>
-                      <Text style={[styles.featureDescription, { color: colors.textSecondary }]}>
-                        {feature.description}
-                      </Text>
-                      {loading ? (
-                        <ActivityIndicator size="small" color={nyuchiColors.sunsetDeep} style={{ marginVertical: 8 }} />
-                      ) : (
-                        <Text style={[styles.featureStat, { color: nyuchiColors.sunsetDeep }]}>
-                          {stats?.[feature.statKey]?.toLocaleString() || '0'}
-                        </Text>
-                      )}
-                      <Text style={[styles.featureStatLabel, { color: colors.textSecondary }]}>
-                        {feature.statLabel}
-                      </Text>
-                    </Card.Content>
-                  </Card>
-                )}
-              </Pressable>
-            ))}
-          </View>
+                    )}
+                    <Text style={[styles.featureStatLabel, { color: colors.textSecondary }]}>
+                      {feature.statLabel}
+                    </Text>
+                  </Card.Content>
+                </Card>
+              )}
+            </Pressable>
+          ))}
         </View>
+      </View>
 
-        {/* Ubuntu Philosophy Section */}
-        <View style={[styles.ubuntuSection, { backgroundColor: colors.background }]}>
-          <Text style={[styles.ubuntuTitle, { color: colors.text }]}>
-            The Ubuntu Philosophy
-          </Text>
-          <Text style={[styles.ubuntuDescription, { color: colors.textSecondary }]}>
-            Ubuntu is an ancient African philosophy that emphasizes our interconnectedness.
-            &quot;I am because we are&quot; reminds us that our success is tied to the success
-            of our community. At Nyuchi, we believe that by supporting each other, we can
-            build a stronger, more prosperous Africa.
-          </Text>
-          <Button
-            mode="outlined"
-            style={[styles.buttonOutline, { borderColor: colors.border }]}
-            labelStyle={[styles.buttonLabel, { color: colors.text }]}
-            contentStyle={styles.buttonContent}
-            onPress={() => router.push('/sign-up')}
-          >
-            Join the Community
-          </Button>
-        </View>
-
-        {/* Footer */}
-        <View style={[styles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            © {new Date().getFullYear()} Nyuchi Africa
-          </Text>
-          <Text style={[styles.footerTagline, { color: nyuchiColors.sunsetDeep }]}>
-            &quot;I am because we are&quot;
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+      {/* Ubuntu Philosophy Section */}
+      <View style={[styles.ubuntuSection, { backgroundColor: colors.background }]}>
+        <Text style={[styles.ubuntuTitle, { color: colors.text }]}>
+          The Ubuntu Philosophy
+        </Text>
+        <Text style={[styles.ubuntuDescription, { color: colors.textSecondary }]}>
+          Ubuntu is an ancient African philosophy that emphasizes our interconnectedness.
+          &quot;I am because we are&quot; reminds us that our success is tied to the success
+          of our community. At Nyuchi, we believe that by supporting each other, we can
+          build a stronger, more prosperous Africa.
+        </Text>
+        <Button
+          mode="outlined"
+          style={[styles.buttonOutline, { borderColor: colors.border }]}
+          labelStyle={[styles.buttonLabel, { color: colors.text }]}
+          contentStyle={styles.buttonContent}
+          onPress={() => router.push('/sign-up')}
+        >
+          Join the Community
+        </Button>
+      </View>
+    </GlobalLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-
-  // Header
-  header: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderBottomWidth: 1,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    maxWidth: 1200,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-
   // Buttons
-  buttonPrimary: {
-    borderRadius: borderRadius.button,
-  },
   buttonOutline: {
     borderRadius: borderRadius.button,
     borderWidth: 1,
@@ -388,19 +219,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 0,
   },
-  buttonLabelSmall: {
-    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
-    fontWeight: '600',
-    fontSize: 13,
-    marginVertical: 0,
-  },
   buttonContent: {
     paddingHorizontal: 16,
     paddingVertical: 6,
-  },
-  buttonContentSmall: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
   },
 
   // Hero
@@ -550,76 +371,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 700,
     marginBottom: 24,
-  },
-
-  // Footer
-  footer: {
-    paddingVertical: 24,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    borderTopWidth: 1,
-  },
-  footerText: {
-    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  footerTagline: {
-    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
-    fontSize: 13,
-    fontStyle: 'italic',
-  },
-
-  // Mobile Navigation
-  mobileNav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconText: {
-    fontSize: 22,
-  },
-
-  // Mobile Menu
-  menuOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-start',
-  },
-  menuPanel: {
-    marginTop: 0,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    paddingBottom: 24,
-    maxHeight: '80%',
-  },
-  menuHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  menuLinks: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    gap: 8,
-  },
-  menuLink: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: borderRadius.button,
-  },
-  menuLinkText: {
-    fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
-    fontSize: 16,
-    fontWeight: '500',
   },
 });
