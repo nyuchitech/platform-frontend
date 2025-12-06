@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { View, StyleSheet, ScrollView, Pressable, Modal } from 'react-native';
-import { Text, Button, Card, IconButton, Avatar, Divider } from 'react-native-paper';
+import { Text, Button, Card, Avatar, Divider } from 'react-native-paper';
 import { useAuth } from '@/lib/auth-context';
 import { useThemeMode } from '@/components/PaperProvider';
 import { ZimbabweFlagStrip } from '@/components/ZimbabweFlagStrip';
@@ -109,12 +109,9 @@ export default function LandingPage() {
                 height={36}
                 style={{ objectFit: 'contain' }}
               />
-              <IconButton
-                icon="close"
-                size={24}
-                iconColor={colors.text}
-                onPress={() => setMenuOpen(false)}
-              />
+              <Pressable style={styles.iconButton} onPress={() => setMenuOpen(false)}>
+                <Text style={[styles.iconText, { color: colors.text }]}>✕</Text>
+              </Pressable>
             </View>
             <Divider style={{ backgroundColor: colors.border }} />
             <View style={styles.menuLinks}>
@@ -159,8 +156,8 @@ export default function LandingPage() {
             <Image
               src={logoSrc}
               alt="Nyuchi Africa"
-              width={isMobile ? 140 : 180}
-              height={isMobile ? 36 : 48}
+              width={isMobile ? 180 : 240}
+              height={isMobile ? 40 : 52}
               style={{ objectFit: 'contain' }}
               priority
             />
@@ -197,29 +194,22 @@ export default function LandingPage() {
                 {user ? (
                   <Link href="/dashboard" style={{ textDecoration: 'none' }}>
                     <Avatar.Text
-                      size={32}
+                      size={36}
                       label={userInitials || 'U'}
                       style={{ backgroundColor: nyuchiColors.sunsetDeep }}
-                      labelStyle={{ fontSize: 14, fontWeight: '600' }}
+                      labelStyle={{ fontSize: 15, fontWeight: '600' }}
                     />
                   </Link>
                 ) : (
                   <Link href="/sign-in" style={{ textDecoration: 'none' }}>
-                    <IconButton
-                      icon="account-circle-outline"
-                      size={28}
-                      iconColor={colors.text}
-                      style={{ margin: 0 }}
-                    />
+                    <Pressable style={styles.iconButton}>
+                      <Text style={[styles.iconText, { color: colors.text }]}>👤</Text>
+                    </Pressable>
                   </Link>
                 )}
-                <IconButton
-                  icon="menu"
-                  size={28}
-                  iconColor={colors.text}
-                  onPress={() => setMenuOpen(true)}
-                  style={{ margin: 0 }}
-                />
+                <Pressable style={styles.iconButton} onPress={() => setMenuOpen(true)}>
+                  <Text style={[styles.iconText, { color: colors.text }]}>☰</Text>
+                </Pressable>
               </View>
             )}
           </View>
@@ -614,7 +604,17 @@ const styles = StyleSheet.create({
   mobileNav: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconText: {
+    fontSize: 22,
   },
 
   // Mobile Menu
